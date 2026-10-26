@@ -1,0 +1,38 @@
+name: record
+
+# Each run polls every 5 minutes for ~5h40m, committing after every poll.
+# The cron fires every 30 min; with the concurrency group below, at most one
+# run is active and one waits, so the next run starts as soon as the last ends.
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: recorder
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    env:
+      RECORDER_DAILY: "1"
+      RECORDER_RAW: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Poll every 5 minutes and commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          end=$((SECONDS + 340*60))
+          while [ $SECONDS -lt $end ]; do
+            sleep $(( 300 - $(date +%s) % 300 ))   # wait for the next 5-minute mark
+            python3 record_buses.py --once || true
+            git add data
+            git commit -qm "data $(date -u +%FT%TZ)" || continue
+            for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 10; done
+          done
