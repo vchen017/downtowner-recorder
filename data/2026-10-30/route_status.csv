@@ -979,3 +979,17 @@ polled_at_utc,route_id,route_name,short_name,description,active,num_stops
 2026-10-30T13:40:00+00:00,17,Orange East,OE,"6pm - 12am, Daily",False,12
 2026-10-30T13:40:00+00:00,18,Weekend Grocery (to Hamden),GROC2,"7am - 5pm, Sat - Sun",False,6
 2026-10-30T13:40:00+00:00,19,Brown Connector,Brown Connector,"6am - 7pm, Mon - Fri",True,9
+2026-10-30T13:45:01+00:00,1,Blue - Weekday Daytime,BD,"7am - 6pm, M - F",True,31
+2026-10-30T13:45:01+00:00,2,Orange - Weekday Daytime,OD,"7am - 6pm, M - F",True,33
+2026-10-30T13:45:01+00:00,3,Red - Weekday Daytime,RD,"7am - 6pm, M - F",True,29
+2026-10-30T13:45:01+00:00,4,Blue - Weekend Daytime,BW,"7am - 6pm, Sat - Sun",False,31
+2026-10-30T13:45:01+00:00,8,Pink - VA Hospital / Med School,PINK,"6am - 6:30pm, M - F",True,12
+2026-10-30T13:45:01+00:00,9,Green - West Campus,GRN,"5:30am - 6:40pm, Daily",True,23
+2026-10-30T13:45:01+00:00,10,Purple - West Campus,PRPL,"5:30am - 11:45pm, Daily",True,15
+2026-10-30T13:45:01+00:00,13,Blue - Night,BN,"6pm - 12am, Daily",False,20
+2026-10-30T13:45:01+00:00,14,Orange - Night,ON,"6pm - 12am, Daily",False,26
+2026-10-30T13:45:01+00:00,15,Gold Route,GOLD,"8am - 6pm, M - F",True,11
+2026-10-30T13:45:01+00:00,16,Blue West,BW,"6pm - 12am, Daily",False,11
+2026-10-30T13:45:01+00:00,17,Orange East,OE,"6pm - 12am, Daily",False,12
+2026-10-30T13:45:01+00:00,18,Weekend Grocery (to Hamden),GROC2,"7am - 5pm, Sat - Sun",False,6
+2026-10-30T13:45:01+00:00,19,Brown Connector,Brown Connector,"6am - 7pm, Mon - Fri",True,9
