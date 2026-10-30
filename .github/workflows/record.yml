@@ -1,8 +1,8 @@
 name: record
 
-# Each run polls every 5 minutes for ~5h40m, committing after every poll.
-# The cron fires every 30 min; with the concurrency group below, at most one
-# run is active and one waits, so the next run starts as soon as the last ends.
+# Each run polls every 5 minutes for ~5h40m, committing after every poll, then
+# queues the next run. The cron (every 30 min) is a backup in case that fails.
+# The concurrency group below keeps at most one run active and one waiting.
 on:
   schedule:
     - cron: "*/30 * * * *"
@@ -14,6 +14,7 @@ concurrency:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   record:
@@ -23,7 +24,11 @@ jobs:
       RECORDER_DAILY: "1"
       RECORDER_RAW: "0"
     steps:
+      # Without ref, a run that waited in the queue checks out the commit from
+      # when it was queued, behind the data the previous run pushed meanwhile.
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - name: Poll every 5 minutes and commit
         run: |
           git config user.name "github-actions[bot]"
@@ -31,8 +36,19 @@ jobs:
           end=$((SECONDS + 340*60))
           while [ $SECONDS -lt $end ]; do
             sleep $(( 300 - $(date +%s) % 300 ))   # wait for the next 5-minute mark
+            # Start each poll from the latest pushed data so the commit can't conflict.
+            git fetch -q origin main && git reset -q --hard origin/main
             python3 record_buses.py --once || true
             git add data
             git commit -qm "data $(date -u +%FT%TZ)" || continue
-            for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 10; done
+            for i in 1 2 3; do
+              git push -q origin HEAD:main && break
+              sleep 10
+              git fetch -q origin main && git rebase -q origin/main || { git rebase --abort; break; }
+            done
           done
+      - name: Queue the next run
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run record.yml --ref main
