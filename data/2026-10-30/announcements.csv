@@ -268,3 +268,6 @@ polled_at_utc,announcement_id,title,message,button_text,button_url
 2026-10-30T20:40:00+00:00,11,Purple,There will be 2 Purple lines running departing Cedar :50 and :30,,
 2026-10-30T20:40:00+00:00,19,Blue,There will be only 2 Blue lines running,,
 2026-10-30T20:40:00+00:00,23,"Red, Brown",Due to Construction the State Street Station has been relocated to Chapel and Union.,,
+2026-10-30T20:45:00+00:00,11,Purple,There will be 2 Purple lines running departing Cedar :50 and :30,,
+2026-10-30T20:45:00+00:00,19,Blue,There will be only 2 Blue lines running,,
+2026-10-30T20:45:00+00:00,23,"Red, Brown",Due to Construction the State Street Station has been relocated to Chapel and Union.,,
