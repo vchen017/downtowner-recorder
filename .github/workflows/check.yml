@@ -1,0 +1,35 @@
+name: saving check
+
+# Every hour, fails if no data has been saved to main for 30 minutes. GitHub emails
+# the account that pushed this schedule when a scheduled run fails, and whoever
+# started a manual run when that one fails. Run it by hand with minutes = 0 to test.
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: "Alert if nothing was saved in this many minutes (0 sends a test alert)"
+        default: "30"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check when data was last saved
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MINUTES: ${{ inputs.minutes }}
+        run: |
+          limit=${MINUTES:-30}   # scheduled runs have no inputs
+          last=$(gh api "repos/$GITHUB_REPOSITORY/commits?sha=main&path=data&per_page=1" -q '.[0].commit.committer.date')
+          age=$(( ($(date +%s) - $(date -d "$last" +%s)) / 60 ))
+          echo "Newest data commit: $last ($age minutes ago)"
+          if [ "$age" -ge "$limit" ]; then
+            echo "::error::No data saved for $age minutes (newest data commit: $last)"
+            exit 1
+          fi

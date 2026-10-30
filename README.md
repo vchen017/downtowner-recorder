@@ -15,6 +15,12 @@ Data is in `data/<UTC date>/`:
 `data/routes.json` and `data/stops.json` hold the latest route shapes and stop list.
 All times are UTC.
 
+## Alert
+
+`.github/workflows/check.yml` runs every hour and fails if nothing has been saved
+for 30 minutes, which makes GitHub email the account that set it up. To test it:
+Actions tab → saving check → Run workflow, with minutes set to 0.
+
 ## Known gaps
 
 475 polls between Oct 27 and Oct 30, 2026 are missing because of a bug in the
