@@ -30,6 +30,8 @@ jobs:
         with:
           ref: main
       - name: Poll every 5 minutes and commit
+        env:
+          HEALTHCHECKS_URL: ${{ secrets.HEALTHCHECKS_URL }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -54,13 +56,21 @@ jobs:
             echo "::warning::Push failed 3 times; $(git rev-list --count origin/main..HEAD) save(s) will go up with the next poll"
             return 1
           }
+          # Tell healthchecks.io that a new save reached GitHub. It emails when these stop.
+          ping_healthchecks() {
+            [ -n "$HEALTHCHECKS_URL" ] || return 0
+            curl -fsS -m 10 --retry 3 -o /dev/null "$HEALTHCHECKS_URL" || echo "::warning::Couldn't reach healthchecks.io"
+          }
           end=$((SECONDS + 340*60))
           while [ $SECONDS -lt $end ]; do
             sleep $(( 300 - $(date +%s) % 300 ))   # wait for the next 5-minute mark
             python3 record_buses.py --once || true
             git add data
-            git commit -qm "data $(date -u +%FT%TZ)" || true
-            push_saves || true
+            if git commit -qm "data $(date -u +%FT%TZ)"; then
+              push_saves && ping_healthchecks || true
+            else
+              push_saves || true   # nothing new this time, but push any earlier saves
+            fi
           done
           push_saves || true   # one last try, so the run doesn't end holding saves
       - name: Queue the next run

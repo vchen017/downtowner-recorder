@@ -17,8 +17,14 @@ All times are UTC.
 
 ## Alert
 
-`.github/workflows/check.yml` runs every hour and fails if nothing has been saved
-for 30 minutes, which makes GitHub email the account that set it up. To test it:
+After every save that reaches GitHub, the recorder pings healthchecks.io (the ping
+URL is in the `HEALTHCHECKS_URL` repository secret). If the pings stop for 15
+minutes (the check's 5-minute period plus 10-minute grace), healthchecks.io emails
+the account that owns the check.
+
+`.github/workflows/check.yml` is a slower backup. It's scheduled every hour, though
+GitHub often runs it only every few hours, and fails if nothing has been saved for
+30 minutes, which makes GitHub email the account that set it up. To test it:
 Actions tab → saving check → Run workflow, with minutes set to 0.
 
 ## Known gaps
