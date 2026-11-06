@@ -33,20 +33,36 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Push every save GitHub doesn't have yet. A save that fails to push stays
+          # committed here and goes up with the next poll, instead of being dropped.
+          # Each git call to GitHub gets 20 seconds, so a stalled one can't make the
+          # loop miss the next 5-minute mark.
+          push_saves() {
+            for try in 1 2 3; do
+              if timeout 20 git fetch -q origin main; then
+                if ! git rebase -q origin/main; then
+                  # Only this job writes the data files, so this shouldn't happen.
+                  git rebase --abort
+                  echo "::warning::Couldn't rebase onto main; dropped $(git rev-list --count origin/main..HEAD) unpushed save(s)"
+                  git reset -q --hard origin/main
+                  return 1
+                fi
+                timeout 20 git push -q origin HEAD:main && return 0
+              fi
+              [ $try = 3 ] || sleep 10
+            done
+            echo "::warning::Push failed 3 times; $(git rev-list --count origin/main..HEAD) save(s) will go up with the next poll"
+            return 1
+          }
           end=$((SECONDS + 340*60))
           while [ $SECONDS -lt $end ]; do
             sleep $(( 300 - $(date +%s) % 300 ))   # wait for the next 5-minute mark
-            # Start each poll from the latest pushed data so the commit can't conflict.
-            git fetch -q origin main && git reset -q --hard origin/main
             python3 record_buses.py --once || true
             git add data
-            git commit -qm "data $(date -u +%FT%TZ)" || continue
-            for i in 1 2 3; do
-              git push -q origin HEAD:main && break
-              sleep 10
-              git fetch -q origin main && git rebase -q origin/main || { git rebase --abort; break; }
-            done
+            git commit -qm "data $(date -u +%FT%TZ)" || true
+            push_saves || true
           done
+          push_saves || true   # one last try, so the run doesn't end holding saves
       - name: Queue the next run
         if: ${{ !cancelled() }}
         env:

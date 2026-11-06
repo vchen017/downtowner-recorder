@@ -23,15 +23,20 @@ Actions tab → saving check → Run workflow, with minutes set to 0.
 
 ## Known gaps
 
-475 polls between Oct 27 and Oct 30, 2026 are missing because of a bug in the
-workflow (fixed Oct 30, 13:40 UTC). Their rows can't be recovered: the Downtowner
-site only serves live data. A gap means the recorder didn't save, **not** that no
-buses were running.
+480 polls are missing. Their rows can't be recovered: the Downtowner site only
+serves live data. A gap means the recorder didn't save, **not** that no buses were
+running.
 
-`data/gaps.csv` lists every missing poll. For 461 of them the job log kept a
+- 475 between Oct 27 and Oct 30, 2026, because of a bug in the workflow (fixed
+  Oct 30, 13:40 UTC).
+- 5 single polls on Nov 4 and 5, when GitHub had trouble accepting saves (fixed
+  Nov 6: a save that fails to push now goes up with the next poll, and git calls
+  to GitHub time out after 20 seconds).
+
+`data/gaps.csv` lists every missing poll. For 465 of them the job log kept a
 one-line summary, so the file still has the number of active routes, buses,
 announcements and ETAs at that time (these counts match the saved data exactly
-wherever both exist). The other 14 had no run at all.
+wherever both exist). The other 15 had no poll at all.
 
 | UTC | Eastern | Polls | Cause |
 |---|---|---|---|
@@ -43,6 +48,9 @@ wherever both exist). The other 14 had no run at all.
 | Oct 29 14:50–15:55 | Thu 10:50 AM–11:55 AM | 14 | no run started |
 | Oct 29 21:45–Oct 30 03:20 | Thu 5:45 PM–11:20 PM | 68 | run could not save |
 | Oct 30 09:10–13:30 | Fri 5:10 AM–9:30 AM | 53 | run could not save |
+| Nov 4 09:45, 10:20, 11:05 | Wed 4:45 AM, 5:20 AM, 6:05 AM | 3 | GitHub rejected the save |
+| Nov 4 23:55 | Wed 6:55 PM | 1 | poll skipped |
+| Nov 5 23:25 | Thu 6:25 PM | 1 | GitHub rejected the save |
 
 Other notes:
 - On Oct 26, `buses.csv` starts at 17:52 UTC; the other files start at 18:09, when they were added.

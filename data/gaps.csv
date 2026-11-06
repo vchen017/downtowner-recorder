@@ -474,3 +474,8 @@ polled_at_utc,cause,active_routes,buses,announcements,etas,eta_stops_ok
 2026-10-30T13:20:00+00:00,run_could_not_save,8,17,2,356,112/112
 2026-10-30T13:25:00+00:00,run_could_not_save,8,17,2,356,112/112
 2026-10-30T13:30:00+00:00,run_could_not_save,8,17,2,356,112/112
+2026-11-04T09:45:01+00:00,push_failed,0,0,1,0,0/0
+2026-11-04T10:20:00+00:00,push_failed,1,1,1,11,11/11
+2026-11-04T11:05:01+00:00,push_failed,4,8,1,106,45/45
+2026-11-04T23:55:00+00:00,poll_skipped,,,,,
+2026-11-05T23:25:00+00:00,push_failed,8,12,1,201,90/90
